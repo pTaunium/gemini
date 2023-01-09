@@ -6,13 +6,14 @@ ENV = Literal["development", "production", "test"]
 
 
 class Config(BaseSettings):
-    host: str = "0.0.0.0"
+    host: str = "127.0.0.1"
     port: int = 8000
     env: ENV = "development"
     debug: bool = False
     log_file: str | None = None
 
     secert: str = "change me"
+    chunk_size: int = 512
 
     db_url: str = "sqlite+aiosqlite:///:memory:"
     db_debug: bool = False

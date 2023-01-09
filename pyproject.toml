@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "gemini"
 version = "0.0.1"
@@ -8,16 +12,17 @@ license = { file = "LICENSE" }
 authors = [{ name = "pTaunium" }, { email = "ptaunium@gmail.com" }]
 dependencies = [
     "pydantic[dotenv]",
+    "pycryptodome",
     "fastapi",
     "uvicorn[standard]",
-    "sqlalchemy[aiosqlite]",
-    "httpx",
-    "rich>=12",
+    "sqlalchemy[aiosqlite]>=1.4",
+    "httpx>=0.23",
+    "rich>=12.0",
 ]
 
 [project.optional-dependencies]
 test = ["pytest", "pytest-cov"]
-dev = [".[test]", "ipython", "mypy", "black", "isort", "rope"]
+dev = ["gemini[test]", "ipython", "mypy", "black", "isort", "rope"]
 
 [project.urls]
 homepage = "https://github.com/pTaunium/gemini"

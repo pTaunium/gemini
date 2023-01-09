@@ -31,17 +31,17 @@ class Potato(object):
     def decrypt(self, data: bytes) -> bytes:
         return bytes(I2B[(64 + B2I[d] - B2I[k]) % 64] for k, d in zip(self._ck, data))
 
-    def pack_bytes(self, data: bytes) -> str:
-        return self.encrypt(self.base64_encode(data)).decode()
+    def pack_bytes(self, data: bytes) -> bytes:
+        return self.encrypt(self.base64_encode(data))
 
     def pack_str(self, data: str) -> str:
-        return self.pack_bytes(data.encode())
+        return self.pack_bytes(data.encode()).decode()
 
-    def unpack_bytes(self, data: str) -> bytes:
-        return self.base64_decode(self.decrypt(data.encode()))
+    def unpack_bytes(self, data: bytes) -> bytes:
+        return self.base64_decode(self.decrypt(data))
 
     def unpack_str(self, data: str) -> str:
-        return self.unpack_bytes(data).decode()
+        return self.unpack_bytes(data.encode()).decode()
 
     def reset(self) -> None:
         self._ck = cycle(self._key)

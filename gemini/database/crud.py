@@ -6,7 +6,7 @@ from uuid import uuid4
 from sqlalchemy.ext.asyncio.session import AsyncSession as Session
 from sqlalchemy.sql.expression import delete, select
 
-from .tables import RequestBody, RequestHeader, RequestSession
+from .tables import RequestBody, RequestHeader, RequestSession, ResponseHeader
 
 
 async def create_request_session(db_session: Session) -> RequestSession:
@@ -39,21 +39,12 @@ async def delete_request_session(db_session: Session, req_session_id: str) -> No
     await db_session.execute(stmt)
 
 
-async def create_or_update_request_header(
+async def create_request_header(
     db_session: Session, req_session_id: str, name: str, value: str,
 ) -> RequestHeader:
-    stmt = select(RequestHeader).where(
-        RequestHeader.session_id == req_session_id, RequestHeader.name == name
-    )
-    result = await db_session.execute(stmt)
-    req_header: RequestHeader | None = result.scalar_one_or_none()
+    req_header = RequestHeader(session_id=req_session_id, name=name, value=value)
 
-    if req_header is None:
-        req_header = RequestHeader(session_id=req_session_id, name=name, value=value)
-        db_session.add(req_header)
-    else:
-        req_header.value = value
-
+    db_session.add(req_header)
     await db_session.commit()
     return req_header
 
@@ -93,5 +84,23 @@ async def read_request_bodies(
         .where(RequestBody.session_id == req_session_id)
         .order_by(RequestBody.index.asc())
     )
+    result = await db_session.execute(stmt)
+    return result.scalars().all()
+
+
+async def create_response_header(
+    db_session: Session, req_session_id: str, name: str, value: str,
+) -> ResponseHeader:
+    resp_header = ResponseHeader(session_id=req_session_id, name=name, value=value)
+
+    db_session.add(resp_header)
+    await db_session.commit()
+    return resp_header
+
+
+async def read_response_headers(
+    db_session: Session, req_session_id: str,
+) -> list[ResponseHeader]:
+    stmt = select(ResponseHeader).where(ResponseHeader.session_id == req_session_id)
     result = await db_session.execute(stmt)
     return result.scalars().all()
